@@ -51,8 +51,9 @@ def main():
         for site in SITES_CONFIG:
             page = context.new_page()
             try:
-                # 获取新文章（默认检查当天的日期）
-                new_articles = check_for_new_articles(page, site)
+                # 获取新文章（默认检查当天，可通过环境变量 TARGET_DATE 指定日期）
+                target_date = os.environ.get("TARGET_DATE")
+                new_articles = check_for_new_articles(page, site, target_date=target_date)
                 
                 # 记录通报情况
                 if new_articles:
