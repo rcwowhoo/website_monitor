@@ -59,12 +59,15 @@ def check_for_new_articles(page, site_config, target_date=None):
     print(f"目标日期: {target_date}")
     
     try:
-        page.goto(site_config['url'], wait_until="domcontentloaded", timeout=30000)
+        page.goto(site_config['url'], wait_until="domcontentloaded", timeout=60000)
     except Exception as e:
         print(f"列表页加载可能未完全完成，尝试继续解析 ({e})")
-        
+
     # 等待列表加载
-    page.wait_for_selector(site_config['list_selector'], timeout=10000)
+    try:
+        page.wait_for_selector(site_config['list_selector'], timeout=30000)
+    except Exception as e:
+        print(f"列表选择器未在预期时间内出现，尝试继续解析 ({e})")
     
     # 【极速优化】：使用 JavaScript 批量提取，将几十秒的逐行解析缩短到几毫秒
     try:
@@ -149,7 +152,7 @@ def save_article_as_pdf(page, article, site_config, output_dir="output"):
             return None
             
     try:
-        page.goto(article['url'], wait_until="domcontentloaded", timeout=30000)
+        page.goto(article['url'], wait_until="domcontentloaded", timeout=60000)
         # 等待一小会儿确保正文加载
         page.wait_for_timeout(2000)
         
