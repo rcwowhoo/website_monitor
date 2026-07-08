@@ -44,7 +44,9 @@ def build_clean_html(title_html, content_html, site_name="", publish_date="", so
 
 def sanitize_filename(filename):
     """清理文件名中的非法字符"""
-    return re.sub(r'[\\/*?:"<>|]', "", filename)
+    # 移除 Windows 文件名非法字符 + 换行/制表等控制字符
+    filename = re.sub(r'[\\/*?:"<>|\r\n\t]', '', filename)
+    return filename.strip()
 
 def check_for_new_articles(page, site_config, target_date=None):
     """

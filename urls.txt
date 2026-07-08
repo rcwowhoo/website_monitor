@@ -1,3 +1,5 @@
 # 在此填入需要自动分析的网站列表页URL，每行一个
-
+https://www.sg.gov.cn/sgtjj/gkmlpt/index
+http://www.heyuan.gov.cn/zwgk/tjsj/tjyb/index.html
+https://www.gdqy.gov.cn/xxgk/zzjg/zfjg/qystjj/tjxx/tjsj/
 
