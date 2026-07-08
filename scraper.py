@@ -1,9 +1,6 @@
 import re
 import os
 from datetime import datetime
-from bs4 import BeautifulSoup
-from playwright.sync_api import sync_playwright
-from pypdf import PdfWriter
 import requests
 
 def build_clean_html(title_html, content_html, site_name="", publish_date="", source_url=""):
@@ -203,67 +200,10 @@ def save_article_as_pdf(page, article, site_config, output_dir="output"):
         # 如果成功生成了纯净 HTML，覆盖当前页面
         if clean_html:
             page.set_content(clean_html)
-            
-        # 【新增特技】：扫描正文里是否有 PDF 附件下载链接
-        attached_pdfs = []
-        if clean_html:
-            # 用 BeautifulSoup 在正文的 HTML 里寻找 .pdf 结尾的 a 标签
-            soup = BeautifulSoup(content_html, 'html.parser')
-            pdf_links = soup.find_all('a', href=re.compile(r'\.pdf$', re.IGNORECASE))
-            
-            for i, a_tag in enumerate(pdf_links):
-                href = a_tag.get('href')
-                if not href:
-                    continue
-                if not href.startswith('http'):
-                    from urllib.parse import urljoin
-                    href = urljoin(article['url'], href)
-                
-                print(f"  -> 发现正文内嵌的 PDF 附件，正在下载: {href}")
-                att_path = os.path.join(output_dir, f"temp_{title_clean}_附件{i+1}.pdf")
-                try:
-                    resp = requests.get(href, stream=True, timeout=30)
-                    if resp.status_code == 200:
-                        with open(att_path, 'wb') as f:
-                            for chunk in resp.iter_content(chunk_size=8192):
-                                f.write(chunk)
-                        attached_pdfs.append(att_path)
-                    else:
-                        print(f"  -> 附件下载失败，状态码: {resp.status_code}")
-                except Exception as e:
-                    print(f"  -> 附件下载出错: {e}")
-        
-        # 保存正文为 PDF (添加合适的页边距)
-        main_pdf_path = os.path.join(output_dir, f"temp_{title_clean}_正文.pdf")
-        page.pdf(path=main_pdf_path, format="A4", print_background=True, margin={"top":"2cm", "bottom":"2cm", "left":"1.5cm", "right":"1.5cm"})
-        
-        # 如果存在附件，则将正文页与附件无缝拼接！
-        if attached_pdfs:
-            print(f"正在将正文与 {len(attached_pdfs)} 个附件合并装订...")
-            merger = PdfWriter()
-            # 先装订正文
-            merger.append(main_pdf_path)
-            # 再按顺序装订附件
-            for att in attached_pdfs:
-                try:
-                    merger.append(att)
-                except Exception as e:
-                    print(f"合并附件 {att} 时警告: {e}")
-                    
-            merger.write(pdf_path)
-            merger.close()
-            
-            # 销毁临时散页
-            try:
-                os.remove(main_pdf_path)
-                for att in attached_pdfs:
-                    os.remove(att)
-            except:
-                pass
-        else:
-            # 如果没有附件，直接把临时生成的正文文件改名为最终文件名
-            os.rename(main_pdf_path, pdf_path)
-            
+
+        # 直接保存为 PDF（正文中的文件链接自然保留为可点击链接）
+        page.pdf(path=pdf_path, format="A4", print_background=True, margin={"top":"2cm", "bottom":"2cm", "left":"1.5cm", "right":"1.5cm"})
+
         print(f"成功保存: {pdf_path}")
         return pdf_path
     except Exception as e:
