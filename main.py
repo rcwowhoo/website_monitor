@@ -140,9 +140,9 @@ def main():
                 sys.exit(1)
     else:
         print("今天没有任何网站发布新文章。")
-        # 即使没有 PDF，也可以发送一封无更新通报邮件 (按需开启)
-        # body_text = "\n".join(summary_lines)
-        # send_email_with_pdfs([], subject="【自动抓取】今日所有网站均无更新", body_text=body_text)
+        # 发送无更新通报邮件，让你知道系统在正常运行
+        body_text = "\n".join(summary_lines)
+        send_email_with_pdfs([], subject="【每日监控】今日所有网站均无更新", body_text=body_text)
 
 if __name__ == "__main__":
     main()
