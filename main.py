@@ -46,13 +46,16 @@ def main():
     with sync_playwright() as p:
         # 启动浏览器 (无头模式)
         browser = p.chromium.launch(headless=True)
-        context = browser.new_context(viewport={'width': 1280, 'height': 1024})
+        context = browser.new_context(
+            viewport={'width': 1280, 'height': 1024},
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+        )
         
         for site in SITES_CONFIG:
             page = context.new_page()
             try:
                 # 获取新文章（默认检查当天的日期）
-                new_articles = check_for_new_articles(page, site)
+                new_articles = check_for_new_articles(page, site, target_date="2026-06-30")
                 
                 # 记录通报情况
                 if new_articles:
