@@ -223,6 +223,17 @@ SITES_CONFIG = [
         "date_format": "%Y-%m-%d",
         "domain_prefix": "",
     },
+    {
+        "name": "韶关市统计局-法定主动公开内容",
+        "url": "https://www.sg.gov.cn/sgtjj/gkmlpt/index",
+        "list_selector": ".table-content tbody tr, #postList table tbody tr",
+        "link_selector": "a.document-number, td.first-td a",
+        "date_selector": "td:nth-child(2)",
+        "title_selector": "h1.title",
+        "content_selector": ".article-content",
+        "date_format": "%Y-%m-%d",
+        "domain_prefix": "",
+    },
 ]
 
 # 邮件发送相关配置 (这些值将从系统环境变量中读取，为了安全，请勿直接写在代码中)
