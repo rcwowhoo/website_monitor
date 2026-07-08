@@ -18,19 +18,18 @@ stages:
       - step: build@python
         name: setup-and-run
         displayName: 环境配置与运行
-        inputs:
-          pythonVersion: '3.10'
-          commands: |
-            # 1. 安装依赖
-            python -m pip install --upgrade pip
-            pip install -r requirements.txt
+        pythonVersion: '3.10'
+        commands: |
+          # 1. 安装依赖
+           python -m pip install --upgrade pip
+           pip install -r requirements.txt
             
-            # 2. 安装 Playwright 浏览器
-            playwright install-deps chromium
-            playwright install chromium
+           # 2. 安装 Playwright 浏览器
+           playwright install-deps chromium
+           playwright install chromium
             
-            # 3. 运行脚本
-            python main.py
+           # 3. 运行脚本
+           python main.py
             
         env:
           # 【注意】Gitee Go 使用 ${变量名} 格式引用环境变量
