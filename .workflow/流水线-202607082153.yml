@@ -19,18 +19,18 @@ stages:
         name: setup-and-run
         displayName: 环境配置与运行
         pythonVersion: '3.10'
-        commands: |
-          # 1. 安装依赖
-           python -m pip install --upgrade pip
-           pip install -r requirements.txt
-            
-           # 2. 安装 Playwright 浏览器
-           playwright install-deps chromium
-           playwright install chromium
-            
-           # 3. 运行脚本
-           python main.py
-            
+        commands:
+          # 1. 使用阿里云镜像加速安装 Python 依赖
+          - pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
+          - pip install -i https://mirrors.aliyun.com/pypi/simple/ playwright
+          
+          # 2. 使用淘宝镜像加速下载无头浏览器
+          - export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright/
+          - playwright install-deps chromium
+          - playwright install chromium
+          
+          # 3. 运行主程序
+          - python main.py
         env:
           # 【注意】Gitee Go 使用 ${变量名} 格式引用环境变量
           SMTP_SERVER: ${SMTP_SERVER}
