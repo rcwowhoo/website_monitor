@@ -1,0 +1,26 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Output and temp files
+output/
+test_downloads/
+*.pdf
+*.log
+
+# Editor directories and files
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
