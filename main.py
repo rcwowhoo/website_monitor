@@ -55,7 +55,7 @@ def main():
             page = context.new_page()
             try:
                 # 获取新文章（默认检查当天的日期）
-                new_articles = check_for_new_articles(page, site, target_date="2026-06-30")
+                new_articles = check_for_new_articles(page, site)
                 
                 # 记录通报情况
                 if new_articles:
