@@ -33,8 +33,8 @@ stages:
           - python main.py
         env:
           # 【注意】Gitee Go 使用 ${变量名} 格式引用环境变量
-          SMTP_SERVER: ${SMTP_SERVER}
-          SMTP_PORT: ${SMTP_PORT}
-          SENDER_EMAIL: ${SENDER_EMAIL}
-          EMAIL_PASSWORD: ${EMAIL_PASSWORD}
-          RECEIVER_EMAIL: ${RECEIVER_EMAIL}
+        SMTP_SERVER: ${{ secrets.SMTP_SERVER }}
+        SMTP_PORT: ${{ secrets.SMTP_PORT }}
+        SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
