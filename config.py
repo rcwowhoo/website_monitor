@@ -244,8 +244,21 @@ try:
 except ImportError:
     pass
 
-SMTP_SERVER = os.environ.get("SMTP_SERVER", "smtp.qq.com") # 默认使用QQ邮箱服务器，可修改
-SMTP_PORT = int(os.environ.get("SMTP_PORT", 465))          # 默认SSL端口为465
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "")
-EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD", "")      # 这里填授权码
-RECEIVER_EMAIL = os.environ.get("RECEIVER_EMAIL", "")
+def _clean_env_value(value):
+    """Gitee Go 有时会把变量包成 ["value"] 格式，统一清理"""
+    if not value:
+        return value
+    if value.startswith('["') and value.endswith('"]'):
+        return value[2:-2]
+    if value.startswith('[') and value.endswith(']'):
+        inner = value[1:-1]
+        if inner.startswith('"') and inner.endswith('"'):
+            inner = inner[1:-1]
+        return inner
+    return value
+
+SMTP_SERVER = _clean_env_value(os.environ.get("SMTP_SERVER", "smtp.qq.com")) # 默认使用QQ邮箱服务器，可修改
+SMTP_PORT = int(_clean_env_value(os.environ.get("SMTP_PORT", "465")))        # 默认SSL端口为465
+SENDER_EMAIL = _clean_env_value(os.environ.get("SENDER_EMAIL", ""))
+EMAIL_PASSWORD = _clean_env_value(os.environ.get("EMAIL_PASSWORD", ""))      # 这里填授权码
+RECEIVER_EMAIL = _clean_env_value(os.environ.get("RECEIVER_EMAIL", ""))
