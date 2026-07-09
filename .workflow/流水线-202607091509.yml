@@ -28,9 +28,9 @@ triggers:
   schedule:
   - cron: 0 0 1 * * ?
 variables:
+  SMTP_PORT: "465"
   global:
   - SENDER_EMAIL
   - EMAIL_PASSWORD
   - RECEIVER_EMAIL
   - SMTP_SERVER
-  - SMTP_PORT
