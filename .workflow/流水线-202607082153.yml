@@ -27,3 +27,9 @@ triggers:
   trigger: manual
   schedule:
   - cron: 0 0 1 * * ?
+variables:
+  global:
+  - SMTP_SERVER
+  - SMTP_PORT
+  - SENDER_EMAIL
+  - EMAIL_PASSWORD
