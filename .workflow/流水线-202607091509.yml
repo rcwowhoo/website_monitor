@@ -17,6 +17,7 @@ stages:
     - export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright/
     - python -m playwright install-deps chromium
     - python -m playwright install chromium
+    - echo "SMTP=[${SMTP_SERVER}:${SMTP_PORT}] SENDER=[${SENDER_EMAIL}] RECEIVER=[${RECEIVER_EMAIL}]"
     - python main.py
     artifacts:
     - name: BUILD_ARTIFACT
