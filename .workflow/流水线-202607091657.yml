@@ -29,7 +29,7 @@ stages:
 triggers:
   trigger: schedule
   schedule:
-  - cron: 24 8 * * *
+  - cron: 0 24 8 * * ?
 variables:
   SMTP_PORT: "465"
   global:
