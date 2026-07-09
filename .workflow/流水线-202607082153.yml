@@ -2,7 +2,6 @@ version: '1.0'
 name: daily-scraper
 displayName: Daily Scraper
 
-# 【关键】声明需要从仓库环境变量管理引入的变量
 variables:
   global:
     - SMTP_SERVER
