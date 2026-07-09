@@ -1,0 +1,36 @@
+version: "1.0"
+name: daily-scraper
+displayName: Daily Scraper
+stages:
+- name: 运行抓取器
+  displayName: 运行抓取器
+  strategy: naturally
+  trigger: auto
+  steps:
+  - step: build@python
+    name: setup-and-run
+    displayName: 环境配置与运行
+    pythonVersion: "3.10"
+    commands:
+    - pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
+    - pip install -i https://mirrors.aliyun.com/pypi/simple/ playwright
+    - export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright/
+    - python -m playwright install-deps chromium
+    - python -m playwright install chromium
+    - python main.py
+    artifacts:
+    - name: BUILD_ARTIFACT
+      path:
+      - ./
+      type: .tar.gz
+triggers:
+  trigger: manual
+  schedule:
+  - cron: 0 0 1 * * ?
+variables:
+  global:
+  - SMTP_SERVER
+  - SMTP_PORT
+  - SENDER_EMAIL
+  - EMAIL_PASSWORD
+  - RECEIVER_EMAIL
