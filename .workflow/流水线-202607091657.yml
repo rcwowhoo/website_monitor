@@ -27,9 +27,9 @@ stages:
     strategy:
       retry: "0"
 triggers:
-  trigger: schedule
+  trigger: manual
   schedule:
-  - cron: 0 24 8 * * ?
+  - cron: 0 24 9 * * ?
 variables:
   SMTP_PORT: "465"
   global:
