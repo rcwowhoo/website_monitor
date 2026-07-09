@@ -4,7 +4,8 @@ displayName: Daily Scraper
 
 triggers:
   schedule:
-    # Gitee Go 使用北京时间，6位 cron（秒 分 时 日 月 周）
+    # 【注意】Gitee Go 使用北京时间！直接写 9:00 和 16:00
+    # 格式：秒 分 时 日 月 周
     - cron: '0 0 1 * * ?'
     - cron: '0 0 8 * * ?'
 
@@ -12,26 +13,28 @@ stages:
   - name: run-scraper-stage
     displayName: 运行抓取器
     steps:
+      # Gitee Go 默认会自动拉取当前仓库代码，无需像 GitHub 那样写 checkout 步骤
+      
       - step: build@python
         name: setup-and-run
         displayName: 环境配置与运行
         pythonVersion: '3.10'
         commands:
-          # 1. 导出环境变量（从 Gitee Go 通用变量读取）
-          - export SMTP_SERVER=${SMTP_SERVER}
-          - export SMTP_PORT=${SMTP_PORT}
-          - export SENDER_EMAIL=${SENDER_EMAIL}
-          - export EMAIL_PASSWORD=${EMAIL_PASSWORD}
-          - export RECEIVER_EMAIL=${RECEIVER_EMAIL}
-
-          # 2. 安装依赖
+          # 1. 使用阿里云镜像加速安装 Python 依赖
           - pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
           - pip install -i https://mirrors.aliyun.com/pypi/simple/ playwright
-
-          # 3. 安装浏览器（使用淘宝镜像加速）
+          
+          # 2. 使用淘宝镜像加速下载无头浏览器 (注意前面加了 python -m)
           - export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright/
           - python -m playwright install-deps chromium
           - python -m playwright install chromium
-
-          # 4. 运行主程序
+          
+          # 3. 运行主程序
           - python main.py
+        env:
+          # 【注意】Gitee Go 使用 ${变量名} 格式引用环境变量
+        SMTP_SERVER: $SMTP_SERVER
+        SMTP_PORT: $SMTP_PORT
+        SENDER_EMAIL: $SENDER_EMAIL
+        EMAIL_PASSWORD: $EMAIL_PASSWORD
+        RECEIVER_EMAIL: $RECEIVER_EMAIL
