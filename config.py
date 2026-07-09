@@ -262,3 +262,4 @@ SMTP_PORT = int(_clean_env_value(os.environ.get("SMTP_PORT", "465")))        # �
 SENDER_EMAIL = _clean_env_value(os.environ.get("SENDER_EMAIL", ""))
 EMAIL_PASSWORD = _clean_env_value(os.environ.get("EMAIL_PASSWORD", ""))      # 这里填授权码
 RECEIVER_EMAIL = _clean_env_value(os.environ.get("RECEIVER_EMAIL", ""))
+KVDB_BUCKET = _clean_env_value(os.environ.get("KVDB_BUCKET", ""))
