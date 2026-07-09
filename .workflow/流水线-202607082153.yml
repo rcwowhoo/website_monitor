@@ -33,3 +33,4 @@ variables:
   - SMTP_PORT
   - SENDER_EMAIL
   - EMAIL_PASSWORD
+  - RECEIVER_EMAIL
