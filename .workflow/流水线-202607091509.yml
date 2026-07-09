@@ -29,8 +29,8 @@ triggers:
   - cron: 0 0 1 * * ?
 variables:
   SMTP_PORT: "465"
+  SMTP_SERVER: smtp.qq.com
   global:
-  - SMTP_SERVER
   - SENDER_EMAIL
   - EMAIL_PASSWORD
   - RECEIVER_EMAIL
