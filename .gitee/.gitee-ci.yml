@@ -25,7 +25,7 @@ stages:
       - ./
       type: .tar.gz
 triggers:
-  trigger: manual
+  trigger: schedule
   schedule:
   - cron: 0 24 8 * * ?
 variables:
