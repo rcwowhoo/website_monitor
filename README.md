@@ -8,13 +8,13 @@
 
 ## 📂 项目文件结构说明
 
-* **[main.py](file:///d:/VS_saveit/website_monitor/main.py)**：主程序运行入口。负责全局流程控制、北京时间时区计算、上午/下午抓取日期判定、云端去重接口交互以及邮件发送调度。
-* **[config.py](file:///d:/VS_saveit/website_monitor/config.py)**：配置文件。定义了被监控网站的爬取规则（选择器、日期格式等）以及邮件服务器基本参数。
-* **[scraper.py](file:///d:/VS_saveit/website_monitor/scraper.py)**：网页爬取与解析模块。使用 Playwright 控制无头浏览器访问目标页面，提供精准选择器抓取以及智能阅读模式（基于 Readability 算法自动识别正文），并最终渲染输出为标准 A4 PDF。
-* **[notifier.py](file:///d:/VS_saveit/website_monitor/notifier.py)**：邮件投递客户端模块。使用 Python `smtplib` 库封装，支持 SSL/TLS 安全通道，负责将生成的 PDF 简报发送至收件箱。
-* **[batch_add_sites.py](file:///d:/VS_saveit/website_monitor/batch_add_sites.py)**：大模型辅助配置工具。读取 `urls.txt` 中的新网页链接，调用大模型自动解析提取规则并写入 `new_configs.txt`，用于快速扩展监控站点。
-* **[requirements.txt](file:///d:/VS_saveit/website_monitor/requirements.txt)**：依赖包声明文件。列出了项目运行所依赖的第三方库。
-* **[.gitee/.gitee-ci.yml](file:///d:/VS_saveit/website_monitor/.gitee/.gitee-ci.yml)**：Gitee Go 流水线配置文件。定义了云端容器的自动调度时间表与运行命令。
+* **[main.py](main.py)**：主程序运行入口。负责全局流程控制、北京时间时区计算、上午/下午抓取日期判定、云端去重接口交互以及邮件发送调度。
+* **[config.py](config.py)**：配置文件。定义了被监控网站的爬取规则（选择器、日期格式等）以及邮件服务器基本参数。
+* **[scraper.py](scraper.py)**：网页爬取与解析模块。使用 Playwright 控制无头浏览器访问目标页面，提供精准选择器抓取以及智能阅读模式（基于 Readability 算法自动识别正文），并最终渲染输出为标准 A4 PDF。
+* **[notifier.py](notifier.py)**：邮件投递客户端模块。使用 Python `smtplib` 库封装，支持 SSL/TLS 安全通道，负责将生成的 PDF 简报发送至收件箱。
+* **[batch_add_sites.py](batch_add_sites.py)**：大模型辅助配置工具。读取 `urls.txt` 中的新网页链接，调用大模型自动解析提取规则并写入 `new_configs.txt`，用于快速扩展监控站点。
+* **[requirements.txt](requirements.txt)**：依赖包声明文件。列出了项目运行所依赖的第三方库。
+* **[.gitee/.gitee-ci.yml](.gitee/.gitee-ci.yml)**：Gitee Go 流水线配置文件。定义了云端容器的自动调度时间表与运行命令。
 
 ---
 
@@ -69,7 +69,7 @@ LLM_MODEL_NAME=deepseek-chat                   # 调用的模型名称
 ```
 
 ### 2. 写入目标网站 URL
-1. 在项目根目录下找到 **[urls.txt](file:///d:/VS_saveit/website_monitor/urls.txt)** 文件（若不存在则新建）。
+1. 在项目根目录下找到 **[urls.txt](urls.txt)** 文件（若不存在则新建）。
 2. 将您想要监控的新站点“列表页”的网址复制并粘贴进去。支持一次写入多个网址，**每行一个**，格式如下：
    ```text
    http://stats.gd.gov.cn/tjkx185/index.html
@@ -99,7 +99,7 @@ python batch_add_sites.py
        "domain_prefix": "",
    }
    ```
-3. 打开 **[config.py](file:///d:/VS_saveit/website_monitor/config.py)** 文件，将上述复制的配置字典粘贴插入到顶部的 `SITES_CONFIG = [...]` 列表当中即可。
+3. 打开 **[config.py](config.py)** 文件，将上述复制的配置字典粘贴插入到顶部的 `SITES_CONFIG = [...]` 列表当中即可。
 4. 运行 `python main.py` 进行本地验证，或直接推送代码，云端便会自动启动对该站点的监控。
 
 ---
