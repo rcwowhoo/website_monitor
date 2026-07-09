@@ -2,16 +2,9 @@ version: '1.0'
 name: daily-scraper
 displayName: Daily Scraper
 
-variables:
-  global:
-    - SMTP_SERVER
-    - SMTP_PORT
-    - SENDER_EMAIL
-    - EMAIL_PASSWORD
-    - RECEIVER_EMAIL
-
 triggers:
   schedule:
+    # Gitee Go 使用北京时间，6位 cron（秒 分 时 日 月 周）
     - cron: '0 0 1 * * ?'
     - cron: '0 0 8 * * ?'
 
@@ -24,9 +17,21 @@ stages:
         displayName: 环境配置与运行
         pythonVersion: '3.10'
         commands:
+          # 1. 导出环境变量（从 Gitee Go 通用变量读取）
+          - export SMTP_SERVER=${SMTP_SERVER}
+          - export SMTP_PORT=${SMTP_PORT}
+          - export SENDER_EMAIL=${SENDER_EMAIL}
+          - export EMAIL_PASSWORD=${EMAIL_PASSWORD}
+          - export RECEIVER_EMAIL=${RECEIVER_EMAIL}
+
+          # 2. 安装依赖
           - pip install -i https://mirrors.aliyun.com/pypi/simple/ -r requirements.txt
           - pip install -i https://mirrors.aliyun.com/pypi/simple/ playwright
+
+          # 3. 安装浏览器（使用淘宝镜像加速）
           - export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright/
           - python -m playwright install-deps chromium
           - python -m playwright install chromium
+
+          # 4. 运行主程序
           - python main.py
