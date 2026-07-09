@@ -24,10 +24,12 @@ stages:
       path:
       - ./
       type: .tar.gz
+    strategy:
+      retry: "0"
 triggers:
-  trigger: manual
+  trigger: schedule
   schedule:
-  - cron: 0 24 8 * * ?
+  - cron: 24 8 * * *
 variables:
   SMTP_PORT: "465"
   global:
