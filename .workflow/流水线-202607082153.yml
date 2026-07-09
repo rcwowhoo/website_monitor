@@ -17,14 +17,6 @@ stages:
     - export PLAYWRIGHT_DOWNLOAD_HOST=https://npmmirror.com/mirrors/playwright/
     - python -m playwright install-deps chromium
     - python -m playwright install chromium
-    - echo "📝 正在写入 .env 配置文件..."
-    - cat > .env <<EOF
-    SMTP_SERVER=${SMTP_SERVER}
-    SMTP_PORT=${SMTP_PORT}
-    SENDER_EMAIL=${SENDER_EMAIL}
-    EMAIL_PASSWORD=${EMAIL_PASSWORD}
-    RECEIVER_EMAIL=${RECEIVER_EMAIL}
-    EOF
     - python main.py
     artifacts:
     - name: BUILD_ARTIFACT
@@ -34,5 +26,4 @@ stages:
 triggers:
   trigger: manual
   schedule:
-  - cron: "0 9 * * *"   # 每天早上9点
-  - cron: "0 16 * * *"  # 每天下午4点
+  - cron: 0 0 1 * * ?
