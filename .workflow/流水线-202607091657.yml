@@ -35,3 +35,6 @@ variables:
   - EMAIL_PASSWORD
   - RECEIVER_EMAIL
   - SMTP_SERVER
+  - GT_TOKEN
+  - GT_REPO
+  - GT_ISSUE_NUM
