@@ -102,10 +102,10 @@ def main():
     sent_history = get_cloud_history()
     
     # 3. 动态决定需要扫描的日期范围与邮件时段后缀
-    if current_hour < 12:
-        scan_dates = [datetime.datetime(2026, 6, 30, tzinfo=tz_beijing)]
-        check_range_text = "指定日期 2026-06-30"
-        time_suffix = "指定日"
+
+    scan_dates = [datetime.datetime(2026, 6, 30, tzinfo=tz_beijing)]
+    check_range_text = "指定日期 2026-06-30"
+    time_suffix = "指定日"
 
         
     beijing_now_str = beijing_now.strftime("%Y-%m-%d %H:%M")
