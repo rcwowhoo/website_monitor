@@ -263,6 +263,6 @@ SENDER_EMAIL = _clean_env_value(os.environ.get("SENDER_EMAIL", ""))
 EMAIL_PASSWORD = _clean_env_value(os.environ.get("EMAIL_PASSWORD", ""))      # 这里填授权码
 RECEIVER_EMAIL = _clean_env_value(os.environ.get("RECEIVER_EMAIL", ""))
 # ===== Gitee 仓库内置 Issue 去重配置 =====
-GITEE_TOKEN = _clean_env_value(os.environ.get("GITEE_TOKEN", ""))
-GITEE_REPO = _clean_env_value(os.environ.get("GITEE_REPO", "rcjing/website_monitor"))
-GITEE_ISSUE_NUM = _clean_env_value(os.environ.get("GITEE_ISSUE_NUM", "1"))
+GITEE_TOKEN = _clean_env_value(os.environ.get("GITEE_TOKEN", os.environ.get("GT_TOKEN", "")))
+GITEE_REPO = _clean_env_value(os.environ.get("GITEE_REPO", os.environ.get("GT_REPO", "rcjing/website_monitor")))
+GITEE_ISSUE_NUM = _clean_env_value(os.environ.get("GITEE_ISSUE_NUM", os.environ.get("GT_ISSUE_NUM", "1")))

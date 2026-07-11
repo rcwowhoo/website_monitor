@@ -131,9 +131,9 @@ python batch_add_sites.py
 | `SENDER_EMAIL` | `xxxxxx@qq.com` | 发件人邮箱 |
 | `EMAIL_PASSWORD` | `mvlxaenjokcbdggg` | 您的邮箱授权码（非登录密码） |
 | `RECEIVER_EMAIL` | `xxxxxx@qq.com` | 收件人邮箱 |
-| `GITEE_TOKEN` | `4b475ad390615efb8b56...` | 您的 Gitee 私人令牌密文（必须配置） |
-| `GITEE_REPO` | `rcjing/website_monitor` | 您的仓库路径（格式如：用户名/项目名，建议配置） |
-| `GITEE_ISSUE_NUM` | `IK0D8C` | 您的去重专用任务卡片（Issue）的混淆标识码（必须配置） |
+| `GT_TOKEN` | `4b475ad390615efb8b56...` | 您的 Gitee 私人令牌密文（必须配置，绕过前缀限制） |
+| `GT_REPO` | `rcjing/website_monitor` | 您的仓库路径（格式如：用户名/项目名，建议配置） |
+| `GT_ISSUE_NUM` | `IK0D8C` | 您的去重专用任务卡片（Issue）的混淆标识码（必须配置） |
 
 ### 4. 运行流水线
 回到 Gitee Go 页面，系统会自动根据项目中的 `.gitee/.gitee-ci.yml` 识别出 `gitee-email-test` 流水线。
