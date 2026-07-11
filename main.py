@@ -6,59 +6,88 @@ import hashlib
 import requests
 from pypdf import PdfWriter
 from playwright.sync_api import sync_playwright
-from config import SITES_CONFIG, KVDB_BUCKET, SENDER_EMAIL
+from config import SITES_CONFIG, GITEE_TOKEN, GITEE_REPO, GITEE_ISSUE_NUM, SENDER_EMAIL
 from scraper import check_for_new_articles, save_article_as_pdf
 from notifier import send_email_with_pdfs
 
-def get_bucket_id():
-    """获取云端 KVDB 的 Bucket ID"""
-    if KVDB_BUCKET:
-        return KVDB_BUCKET
-    # 如果用户没有配置特殊的 KVDB_BUCKET，则根据发件人邮箱生成专属哈希 Bucket，实现零门槛去重
-    if SENDER_EMAIL:
-        return "bucket_" + hashlib.md5(SENDER_EMAIL.encode('utf-8')).hexdigest()
-    return "default_gitee_scraper_bucket_992348"
-
 def get_cloud_history():
-    """从云端 kvdb.io 获取已发文章的 URL 集合"""
-    bucket = get_bucket_id()
-    url = f"https://kvdb.io/{bucket}/sent_history"
-    print(f"正在从云端拉取已发送历史记录，Bucket: {bucket}...")
+    """从 Gitee 仓库指定 Issue 的评论中读取最新已发文章的 URL 集合"""
+    repo = GITEE_REPO if GITEE_REPO else os.environ.get("GG_REPOSITORY", "")
+    token = GITEE_TOKEN
+    issue_num = GITEE_ISSUE_NUM
+    
+    if not token or not repo:
+        print("提示：未配置 GITEE_TOKEN 或 GITEE_REPO，本地运行或流水线运行将不使用去重。")
+        return set()
+        
+    url = f"https://gitee.com/api/v5/repos/{repo}/issues/{issue_num}/comments?access_token={token}"
+    headers = {
+        "Content-Type": "application/json"
+    }
+    
+    print(f"正在从 Gitee 仓库 {repo} 的 Issue #{issue_num} 评论中拉取已发送历史记录...")
     try:
-        response = requests.get(url, timeout=15)
+        response = requests.get(url, headers=headers, timeout=15)
         if response.status_code == 200:
-            urls = json.loads(response.text)
-            print(f"成功获取云端历史，共 {len(urls)} 条记录。")
-            return set(urls)
+            comments = response.json()
+            if not comments:
+                print("Gitee Issue 暂无评论，云端暂无历史发送记录。")
+                return set()
+            # 拿到最新发表的一条评论（即列表的最后一条）
+            latest_comment = comments[-1]
+            body_text = latest_comment.get("body", "")
+            if not body_text or body_text.strip() == "":
+                print("最新评论内容为空，云端去重历史判定为空。")
+                return set()
+            try:
+                # 解析评论正文里的 JSON 列表
+                urls = json.loads(body_text.strip())
+                print(f"成功从 Gitee 评论获取去重历史，共 {len(urls)} 条记录。")
+                return set(urls)
+            except json.JSONDecodeError:
+                print("最新评论内容非合法 JSON 列表格式，判定为空历史。")
+                return set()
         elif response.status_code == 404:
-            print("云端暂无历史发送记录（可能是首次运行）。")
+            print(f"错误：未在 Gitee 上找到 Issue #{issue_num}。请确认您在 Gitee 仓库的“任务”中已经新建了该 Issue！")
             return set()
         else:
-            print(f"云端读取失败，HTTP 状态码: {response.status_code}，本次将不使用去重。")
+            print(f"Gitee 历史评论读取失败，HTTP 状态码: {response.status_code}，响应: {response.text}")
             return set()
     except Exception as e:
-        print(f"云端读取异常: {str(e)}，本次将不使用去重。")
+        print(f"Gitee 历史评论读取网络异常: {str(e)}，本次运行将不使用去重。")
         return set()
 
 def save_cloud_history(sent_urls):
-    """向云端 kvdb.io 更新并保存已发文章的 URL 列表"""
-    bucket = get_bucket_id()
-    url = f"https://kvdb.io/{bucket}/sent_history"
+    """将已发文章的 URL 列表作为新评论同步到 Gitee Issue 中"""
+    repo = GITEE_REPO if GITEE_REPO else os.environ.get("GG_REPOSITORY", "")
+    token = GITEE_TOKEN
+    issue_num = GITEE_ISSUE_NUM
     
-    # 限制列表长度，防止网络传输包过大（只保留最近 200 条即可满足近几日去重需求）
+    if not token or not repo:
+        print("提示：未配置 GITEE_TOKEN 或 GITEE_REPO，跳过 Gitee 去重历史更新。")
+        return False
+        
+    url = f"https://gitee.com/api/v5/repos/{repo}/issues/{issue_num}/comments?access_token={token}"
+    headers = {
+        "Content-Type": "application/json"
+    }
+    
+    # 限制列表长度，防止数据过大（只保留最近 200 条）
     history_list = list(sent_urls)[-200:]
+    json_data = json.dumps(history_list, ensure_ascii=False, indent=2)
     
-    print(f"正在向云端同步已发送文章历史...")
+    print(f"正在将最新已发送文章历史作为新评论同步更新至 Gitee Issue #{issue_num}...")
     try:
-        response = requests.put(url, data=json.dumps(history_list), timeout=15)
-        if response.status_code in [200, 201]:
-            print("云端历史记录同步成功！")
+        # 使用 POST 创建评论
+        response = requests.post(url, headers=headers, json={"body": json_data}, timeout=15)
+        if response.status_code == 201:
+            print("Gitee Issue 评论去重历史记录同步成功！")
             return True
         else:
-            print(f"云端历史同步失败，HTTP 状态码: {response.status_code}")
+            print(f"Gitee Issue 评论同步失败，HTTP 状态码: {response.status_code}，响应: {response.text}")
             return False
     except Exception as e:
-        print(f"云端历史同步发生网络异常: {str(e)}")
+        print(f"Gitee Issue 评论同步发生网络异常: {str(e)}")
         return False
 
 
@@ -102,9 +131,15 @@ def main():
     sent_history = get_cloud_history()
     
     # 3. 动态决定需要扫描的日期范围与邮件时段后缀
-    scan_dates = [datetime.datetime(2026, 6, 30, tzinfo=tz_beijing)]
-    check_range_text = "指定日期 2026-06-30"
-    time_suffix = "指定日"
+    if current_hour < 12:
+        beijing_yesterday = beijing_now - datetime.timedelta(days=1)
+        scan_dates = [beijing_yesterday, beijing_now]
+        check_range_text = "昨天及今天发布的文章 (双日防漏)"
+        time_suffix = "上午"
+    else:
+        scan_dates = [beijing_now]
+        check_range_text = "今天发布的文章"
+        time_suffix = "下午"
   
     beijing_now_str = beijing_now.strftime("%Y-%m-%d %H:%M")
     
