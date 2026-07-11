@@ -160,6 +160,6 @@ Gitee Go 等云端流水线服务器的默认系统时区通常是 UTC 时间（
   * **故障防灾**：若 `kvdb.io` 超时或服务中断，程序捕获异常后将自动降级运行（即本次直接不使用去重发送），保障了爬虫流水线的健壮度。
 * **去重历史查看与管理**：
   您可以在浏览器中访问以下专属链接直接查看当前云端保存的已发网址列表：
-  [https://kvdb.io/bucket_6e670623dba8b48c0037ac1b837455b7/sent_history](https://kvdb.io/bucket_6e670623dba8b48c0037ac1b837455b7/sent_history)
+  [https://kvdb.io/EFYeTmNsH74hkM8ZJrLoxv/sent_history](https://kvdb.io/EFYeTmNsH74hkM8ZJrLoxv/sent_history)
   *(注：初次成功发信前该页面会显示 404，属于正常现象)*
-  * **重置历史**：如需测试重新发送，可在终端运行 `curl -X DELETE https://kvdb.io/bucket_6e670623dba8b48c0037ac1b837455b7/sent_history` 清空云端缓存。
+  * **重置历史**：如需测试重新发送，可在终端运行 `curl -X DELETE https://kvdb.io/EFYeTmNsH74hkM8ZJrLoxv/sent_history` 清空云端缓存。
