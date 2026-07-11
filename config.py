@@ -262,4 +262,7 @@ SMTP_PORT = int(_clean_env_value(os.environ.get("SMTP_PORT", "465")))        # �
 SENDER_EMAIL = _clean_env_value(os.environ.get("SENDER_EMAIL", ""))
 EMAIL_PASSWORD = _clean_env_value(os.environ.get("EMAIL_PASSWORD", ""))      # 这里填授权码
 RECEIVER_EMAIL = _clean_env_value(os.environ.get("RECEIVER_EMAIL", ""))
-KVDB_BUCKET = _clean_env_value(os.environ.get("KVDB_BUCKET", "EFYeTmNsH74hkM8ZJrLoxv"))
+# ===== Gitee 仓库内置 Issue 去重配置 =====
+GITEE_TOKEN = _clean_env_value(os.environ.get("GITEE_TOKEN", ""))
+GITEE_REPO = _clean_env_value(os.environ.get("GITEE_REPO", "rcjing/website_monitor"))
+GITEE_ISSUE_NUM = _clean_env_value(os.environ.get("GITEE_ISSUE_NUM", "1"))
