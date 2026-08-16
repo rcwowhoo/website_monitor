@@ -8,7 +8,7 @@ from pypdf import PdfWriter
 from playwright.sync_api import sync_playwright
 from config import SITES_CONFIG, GITEE_TOKEN, GITEE_REPO, GITEE_ISSUE_NUM, SENDER_EMAIL
 from scraper import check_for_new_articles, save_article_as_pdf
-from notifier import send_email_with_pdfs
+from notifier import send_email_with_pdfs, send_serverchan_message
 
 def get_cloud_history():
     """从 Gitee 仓库指定 Issue 的评论中读取最新已发文章的 URL 集合"""
@@ -254,6 +254,20 @@ def main():
         
         # 构造带有前置日期与下午/上午后缀的主题
         subject_title = f"【{date_prefix}】网站数据更新简报 ({time_suffix})"
+
+        # 构造 Server酱 微信推送正文（Markdown 标题+链接摘要）
+        push_lines = [
+            f"**爬取时间:** {beijing_now_str} (北京时间)",
+            f"**检查范围:** {check_range_text}",
+            "",
+        ]
+        if article_catalog:
+            push_lines.append("### 今日更新")
+            for item in article_catalog:
+                push_lines.append(f"- [{item['title']}]({item['url']}) — {item['source']}")
+        else:
+            push_lines.append("指定范围内没有任何网站发布新文章。")
+        push_content = "\n".join(push_lines)
         
         if TEST_MODE:
             print(f"【测试模式已开启】已跳过发送邮件。")
@@ -261,6 +275,10 @@ def main():
             print(f"拟发送的主题为：{subject_title}")
             print("\n=== 以下是准备发送的邮件正文 ===")
             print("\n".join(summary_lines))
+            print("=================================")
+            print("\n=== 以下是准备推送的微信消息 ===")
+            print(f"推送标题：{subject_title}")
+            print(push_content)
             print("=================================")
         else:
             print("准备发送邮件...")
@@ -275,6 +293,8 @@ def main():
                 new_sent_urls = set(item['url'] for item in article_catalog)
                 updated_history = sent_history.union(new_sent_urls)
                 save_cloud_history(updated_history)
+                # 3. 发送 Server酱 微信推送（失败只记日志，不影响主流程）
+                send_serverchan_message(subject_title, push_content)
             else:
                 print("发送失败，退出。")
                 sys.exit(1)
@@ -285,6 +305,8 @@ def main():
         # 发送无更新通报邮件，让你知道系统在正常运行
         body_text = "\n".join(summary_lines)
         send_email_with_pdfs([], subject=subject_title, body_text=body_text)
+        # 同步发送微信推送（失败只记日志，不影响主流程）
+        send_serverchan_message(subject_title, "指定范围内没有任何网站发布新文章。")
 
 if __name__ == "__main__":
     main()

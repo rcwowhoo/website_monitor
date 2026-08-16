@@ -1,10 +1,11 @@
 import os
 import re
 import smtplib
+import requests
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
-from config import SMTP_SERVER, SMTP_PORT, SENDER_EMAIL, EMAIL_PASSWORD, RECEIVER_EMAIL
+from config import SMTP_SERVER, SMTP_PORT, SENDER_EMAIL, EMAIL_PASSWORD, RECEIVER_EMAIL, SERVERCHAN_SENDKEY
 
 def send_email_with_pdfs(pdf_files, subject="【自动抓取】网站新数据更新", body_text="今日有新的数据发布，请查看附件中的 PDF 文件。"):
     if not SENDER_EMAIL or not EMAIL_PASSWORD or not RECEIVER_EMAIL:
@@ -56,3 +57,28 @@ def send_email_with_pdfs(pdf_files, subject="【自动抓取】网站新数据�
     except Exception as e:
         print(f"邮件发送失败: {str(e)}")
         return False
+
+def send_serverchan_message(title, content_markdown):
+    """Server酱 微信推送。SendKey 未配置时静默跳过（不报错、不影响主流程）。
+    支持逗号分隔多个 SendKey（SERVERCHAN_SENDKEY=SCTa,SCTb），逐个推送，
+    单个 key 失败不影响其他 key；任一成功即返回 True。"""
+    if not SERVERCHAN_SENDKEY:
+        print("提示：未配置 SERVERCHAN_SENDKEY，跳过微信推送。")
+        return False
+
+    sendkeys = [k.strip() for k in SERVERCHAN_SENDKEY.split(",") if k.strip()]
+    print(f"准备发送 Server酱 微信推送，共 {len(sendkeys)} 个接收者...")
+    any_success = False
+    for sendkey in sendkeys:
+        url = f"https://sctapi.ftqq.com/{sendkey}.send"
+        try:
+            response = requests.post(url, data={"title": title, "desp": content_markdown}, timeout=15)
+            result = response.json()
+            if result.get("code") == 0:
+                print("微信推送发送成功！")
+                any_success = True
+            else:
+                print(f"微信推送发送失败: {result.get('message', '未知错误')}")
+        except Exception as e:
+            print(f"微信推送发送异常: {str(e)}")
+    return any_success

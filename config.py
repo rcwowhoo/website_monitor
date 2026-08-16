@@ -266,3 +266,5 @@ RECEIVER_EMAIL = _clean_env_value(os.environ.get("RECEIVER_EMAIL", ""))
 GITEE_TOKEN = _clean_env_value(os.environ.get("GITEE_TOKEN", os.environ.get("GT_TOKEN", "")))
 GITEE_REPO = _clean_env_value(os.environ.get("GITEE_REPO", os.environ.get("GT_REPO", "rcjing/website_monitor")))
 GITEE_ISSUE_NUM = _clean_env_value(os.environ.get("GITEE_ISSUE_NUM", os.environ.get("GT_ISSUE_NUM", "1")))
+# ===== Server酱 微信推送配置 =====
+SERVERCHAN_SENDKEY = _clean_env_value(os.environ.get("SERVERCHAN_SENDKEY", ""))
